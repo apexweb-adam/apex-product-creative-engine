@@ -5,6 +5,8 @@ import { recommendTier } from "./site/app.mjs";
 const html = await readFile(new URL("./site/index.html", import.meta.url), "utf8");
 const css = await readFile(new URL("./site/styles.css", import.meta.url), "utf8");
 const js = await readFile(new URL("./site/app.mjs", import.meta.url), "utf8");
+const robots = await readFile(new URL("./site/robots.txt", import.meta.url), "utf8");
+const sitemap = await readFile(new URL("./site/sitemap.xml", import.meta.url), "utf8");
 
 const occurrences = (value, source = html) => source.split(value).length - 1;
 
@@ -76,6 +78,11 @@ for (const breakpoint of ["1080px", "720px", "480px"]) {
 assert.match(css, /prefers-reduced-motion: reduce/);
 assert.match(css, /:focus-visible/);
 assert.match(css, /overflow-x: hidden/);
+assert.match(robots, /User-agent: \*/);
+assert.match(robots, /Allow: \//);
+assert.match(robots, /Sitemap: https:\/\/apexweb-adam\.github\.io\/apex-product-creative-engine\/sitemap\.xml/);
+assert.match(sitemap, /<loc>https:\/\/apexweb-adam\.github\.io\/apex-product-creative-engine\/<\/loc>/);
+assert.match(sitemap, /<lastmod>2026-07-28<\/lastmod>/);
 
 assert.doesNotMatch(html, /best[- ]selling|most popular|limited time|countdown/i);
 assert.doesNotMatch(html, /—/);

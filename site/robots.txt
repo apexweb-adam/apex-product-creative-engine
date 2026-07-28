@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://apexweb-adam.github.io/apex-product-creative-engine/sitemap.xml
