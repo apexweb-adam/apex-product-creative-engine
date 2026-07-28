@@ -16,7 +16,7 @@ assert.match(html, /<html lang="en">/);
 assert.match(html, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
 assert.match(html, /<link rel="canonical" href="https:\/\/apexweb-adam\.github\.io\/apex-product-creative-engine\/">/);
 assert.match(html, /<link rel="icon" type="image\/svg\+xml" href="\.\/favicon\.svg">/);
-assert.match(html, /<script type="module" src="\.\/app\.mjs\?v=95e50bf4"><\/script>/);
+assert.match(html, /<script type="module" src="\.\/app\.mjs\?v=063a5d51"><\/script>/);
 assert.match(favicon, /<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 64 64">/);
 assert.equal(occurrences("<h1"), 1, "The page must expose exactly one h1.");
 assert.match(html, /Turn product facts into a creative system, without inventing the proof\./);
@@ -57,22 +57,37 @@ for (const [tier, route] of Object.entries(checkoutRoutes)) {
 assert.equal(
   withStripeAttribution(
     checkoutRoutes.core,
-    "?utm_source=aikendra&utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_02"
+    "?utm_source=aikendra&utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_02",
+    { tier: "core", placement: "pricing" }
   ),
-  `${checkoutRoutes.core}?utm_source=aikendra&utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_02`
+  `${checkoutRoutes.core}?utm_source=aikendra&utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_02&client_reference_id=pce_core_aikendra_tool_listing_02_pricing`
 );
 assert.equal(
   withStripeAttribution(
     checkoutRoutes.pro,
-    "?utm_source=buyer%40example.com&utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_03&utm_term=product-creative"
+    "?utm_source=buyer%40example.com&utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_03&utm_term=product-creative",
+    { tier: "pro", placement: "fit-recommendation" }
   ),
-  `${checkoutRoutes.pro}?utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_03&utm_term=product-creative`,
+  `${checkoutRoutes.pro}?utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_03&utm_term=product-creative&client_reference_id=pce_pro_direct_tool_listing_03_fit-recommendation`,
   "Unsafe campaign values must be dropped instead of forwarded to Stripe."
 );
 assert.equal(
-  withStripeAttribution(checkoutRoutes.agency, "?utm_source=" + "a".repeat(151)),
-  checkoutRoutes.agency,
-  "Stripe campaign values over 150 characters must be dropped."
+  withStripeAttribution(
+    checkoutRoutes.agency,
+    "?utm_source=" + "a".repeat(151),
+    { tier: "agency", placement: "pricing" }
+  ),
+  `${checkoutRoutes.agency}?client_reference_id=pce_agency_direct_buyer_page_pricing`,
+  "Stripe campaign values over 150 characters must be dropped and must not enter the reference."
+);
+assert.equal(
+  new URL(withStripeAttribution(
+    checkoutRoutes.core,
+    `?utm_source=${"s".repeat(50)}&utm_content=${"c".repeat(50)}`,
+    { tier: "t".repeat(50), placement: "p".repeat(50) }
+  )).searchParams.get("client_reference_id").length,
+  200,
+  "Stripe client_reference_id must not exceed the documented 200-character limit."
 );
 
 assert.equal(recommendTier({ usage: "internal", variants: "no", toolkit: "no" }), "core");

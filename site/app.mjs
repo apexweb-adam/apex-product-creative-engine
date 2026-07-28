@@ -46,8 +46,16 @@ const stripeCampaignParameters = [
 ];
 
 const stripeCampaignValue = /^[A-Za-z0-9_-]{1,150}$/;
+const stripeReferenceValue = /^[A-Za-z0-9_-]{1,50}$/;
 
-export function withStripeAttribution(checkoutUrl, search = "") {
+function referencePart(value, fallback) {
+  return stripeReferenceValue.test(String(value || "")) ? String(value) : fallback;
+}
+
+export function withStripeAttribution(checkoutUrl, search = "", {
+  tier = "unknown",
+  placement = "buyer_page"
+} = {}) {
   const attributedUrl = new URL(checkoutUrl);
   const incoming = search instanceof URLSearchParams
     ? search
@@ -59,6 +67,15 @@ export function withStripeAttribution(checkoutUrl, search = "") {
       attributedUrl.searchParams.set(parameter, value);
     }
   }
+
+  const campaignReference = [
+    "pce",
+    referencePart(tier, "unknown"),
+    referencePart(incoming.get("utm_source"), "direct"),
+    referencePart(incoming.get("utm_content"), "buyer_page"),
+    referencePart(placement, "buyer_page")
+  ].join("_").slice(0, 200);
+  attributedUrl.searchParams.set("client_reference_id", campaignReference);
 
   return attributedUrl.toString();
 }
@@ -97,7 +114,10 @@ function renderRecommendation(tier) {
     item.textContent = feature;
     return item;
   }));
-  checkout.href = withStripeAttribution(data.checkout, window.location.search);
+  checkout.href = withStripeAttribution(data.checkout, window.location.search, {
+    tier,
+    placement: checkout.dataset.placement
+  });
   checkout.dataset.checkout = tier;
   checkout.firstChild.textContent = `Buy ${data.name} `;
 }
@@ -106,7 +126,10 @@ function initialiseCheckoutAttribution() {
   for (const checkout of document.querySelectorAll("a[data-checkout]")) {
     const tier = checkout.dataset.checkout;
     if (tierData[tier]) {
-      checkout.href = withStripeAttribution(tierData[tier].checkout, window.location.search);
+      checkout.href = withStripeAttribution(tierData[tier].checkout, window.location.search, {
+        tier,
+        placement: checkout.dataset.placement
+      });
     }
   }
 }
