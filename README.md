@@ -1,8 +1,11 @@
 # Apex Product Creative Engine
 
 [![Verify free sample](https://github.com/apexweb-adam/apex-product-creative-engine/actions/workflows/verify.yml/badge.svg)](https://github.com/apexweb-adam/apex-product-creative-engine/actions/workflows/verify.yml)
+[![Deploy buyer page](https://github.com/apexweb-adam/apex-product-creative-engine/actions/workflows/pages.yml/badge.svg)](https://github.com/apexweb-adam/apex-product-creative-engine/actions/workflows/pages.yml)
 
 An evidence-gated ecommerce creative workflow by [Apex Web](https://apexweb.hu/ai-prompt-konyvtar-webshopoknak?utm_source=github&utm_medium=product_repository&utm_campaign=pce_validation).
+
+[Open the English buyer guide and license selector](https://apexweb-adam.github.io/apex-product-creative-engine/).
 
 The free sample in this repository checks proposed product copy against numbered source evidence. It maps every factual claim, catches unsupported proof, and returns a fixed `PASS`, `REPAIR`, or `BLOCK` release decision.
 

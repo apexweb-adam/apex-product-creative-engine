@@ -4,7 +4,7 @@
   "private": true,
   "description": "Verified free fact-lock and creative-claim QA sample for ecommerce operators.",
   "scripts": {
-    "test": "node verify-sample.mjs"
+    "test": "node verify-sample.mjs && node verify-site.mjs"
   },
   "engines": {
     "node": ">=20"
