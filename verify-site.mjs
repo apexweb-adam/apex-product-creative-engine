@@ -16,6 +16,7 @@ assert.match(html, /<html lang="en">/);
 assert.match(html, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
 assert.match(html, /<link rel="canonical" href="https:\/\/apexweb-adam\.github\.io\/apex-product-creative-engine\/">/);
 assert.match(html, /<link rel="icon" type="image\/svg\+xml" href="\.\/favicon\.svg">/);
+assert.match(html, /<script type="module" src="\.\/app\.mjs\?v=95e50bf4"><\/script>/);
 assert.match(favicon, /<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 64 64">/);
 assert.equal(occurrences("<h1"), 1, "The page must expose exactly one h1.");
 assert.match(html, /Turn product facts into a creative system, without inventing the proof\./);
