@@ -7,6 +7,7 @@ const css = await readFile(new URL("./site/styles.css", import.meta.url), "utf8"
 const js = await readFile(new URL("./site/app.mjs", import.meta.url), "utf8");
 const robots = await readFile(new URL("./site/robots.txt", import.meta.url), "utf8");
 const sitemap = await readFile(new URL("./site/sitemap.xml", import.meta.url), "utf8");
+const favicon = await readFile(new URL("./site/favicon.svg", import.meta.url), "utf8");
 
 const occurrences = (value, source = html) => source.split(value).length - 1;
 
@@ -14,6 +15,8 @@ assert.match(html, /^<!doctype html>/i);
 assert.match(html, /<html lang="en">/);
 assert.match(html, /<meta name="viewport" content="width=device-width, initial-scale=1">/);
 assert.match(html, /<link rel="canonical" href="https:\/\/apexweb-adam\.github\.io\/apex-product-creative-engine\/">/);
+assert.match(html, /<link rel="icon" type="image\/svg\+xml" href="\.\/favicon\.svg">/);
+assert.match(favicon, /<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 64 64">/);
 assert.equal(occurrences("<h1"), 1, "The page must expose exactly one h1.");
 assert.match(html, /Turn product facts into a creative system, without inventing the proof\./);
 
