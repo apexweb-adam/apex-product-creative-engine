@@ -7,6 +7,8 @@ An evidence-gated ecommerce creative workflow by [Apex Web](https://apexweb.hu/a
 
 [Open the English buyer guide and license selector](https://apexweb-adam.github.io/apex-product-creative-engine/).
 
+[Read the fact-locked ecommerce product description prompt guide](https://apexweb-adam.github.io/apex-product-creative-engine/ecommerce-product-description-prompt/).
+
 The free sample in this repository checks proposed product copy against numbered source evidence. It maps every factual claim, catches unsupported proof, and returns a fixed `PASS`, `REPAIR`, or `BLOCK` release decision.
 
 ## Why this exists
