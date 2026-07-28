@@ -47,6 +47,13 @@ const stripeCampaignParameters = [
 
 const stripeCampaignValue = /^[A-Za-z0-9_-]{1,150}$/;
 const stripeReferenceValue = /^[A-Za-z0-9_-]{1,50}$/;
+const checkoutAttributionDefaults = {
+  utm_source: "attributionSource",
+  utm_medium: "attributionMedium",
+  utm_campaign: "attributionCampaign",
+  utm_content: "attributionContent",
+  utm_term: "attributionTerm"
+};
 
 function referencePart(value, fallback) {
   return stripeReferenceValue.test(String(value || "")) ? String(value) : fallback;
@@ -78,6 +85,21 @@ export function withStripeAttribution(checkoutUrl, search = "", {
   attributedUrl.searchParams.set("client_reference_id", campaignReference);
 
   return attributedUrl.toString();
+}
+
+export function withAttributionDefaults(search = "", dataset = {}) {
+  const incoming = search instanceof URLSearchParams
+    ? new URLSearchParams(search)
+    : new URLSearchParams(search);
+
+  for (const [parameter, datasetKey] of Object.entries(checkoutAttributionDefaults)) {
+    const fallback = dataset[datasetKey];
+    if (!incoming.has(parameter) && fallback && stripeCampaignValue.test(fallback)) {
+      incoming.set(parameter, fallback);
+    }
+  }
+
+  return incoming;
 }
 
 export function recommendTier({ usage, variants, toolkit }) {
@@ -126,7 +148,10 @@ function initialiseCheckoutAttribution() {
   for (const checkout of document.querySelectorAll("a[data-checkout]")) {
     const tier = checkout.dataset.checkout;
     if (tierData[tier]) {
-      checkout.href = withStripeAttribution(tierData[tier].checkout, window.location.search, {
+      checkout.href = withStripeAttribution(tierData[tier].checkout, withAttributionDefaults(
+        window.location.search,
+        checkout.dataset
+      ), {
         tier,
         placement: checkout.dataset.placement
       });
