@@ -17,6 +17,10 @@ const guideCss = await readFile(new URL("./site/guide.css", import.meta.url), "u
 const robots = await readFile(new URL("./site/robots.txt", import.meta.url), "utf8");
 const sitemap = await readFile(new URL("./site/sitemap.xml", import.meta.url), "utf8");
 const favicon = await readFile(new URL("./site/favicon.svg", import.meta.url), "utf8");
+const indexNowKey = await readFile(
+  new URL("./site/780d05b71025217a54601d50e7eeef64.txt", import.meta.url),
+  "utf8"
+);
 
 const occurrences = (value, source = html) => source.split(value).length - 1;
 
@@ -27,6 +31,11 @@ assert.match(html, /<link rel="canonical" href="https:\/\/apexweb-adam\.github\.
 assert.match(html, /<link rel="icon" type="image\/svg\+xml" href="\.\/favicon\.svg">/);
 assert.match(html, /<script type="module" src="\.\/app\.mjs\?v=e1dd8b16"><\/script>/);
 assert.match(favicon, /<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 64 64">/);
+assert.equal(
+  indexNowKey,
+  "780d05b71025217a54601d50e7eeef64\n",
+  "The root IndexNow ownership file must contain only the exact public key."
+);
 assert.equal(occurrences("<h1"), 1, "The page must expose exactly one h1.");
 assert.match(html, /Turn product facts into a creative system, without inventing the proof\./);
 
