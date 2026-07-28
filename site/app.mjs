@@ -37,6 +37,32 @@ const tierData = {
   }
 };
 
+const stripeCampaignParameters = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term"
+];
+
+const stripeCampaignValue = /^[A-Za-z0-9_-]{1,150}$/;
+
+export function withStripeAttribution(checkoutUrl, search = "") {
+  const attributedUrl = new URL(checkoutUrl);
+  const incoming = search instanceof URLSearchParams
+    ? search
+    : new URLSearchParams(search);
+
+  for (const parameter of stripeCampaignParameters) {
+    const value = incoming.get(parameter);
+    if (value && stripeCampaignValue.test(value)) {
+      attributedUrl.searchParams.set(parameter, value);
+    }
+  }
+
+  return attributedUrl.toString();
+}
+
 export function recommendTier({ usage, variants, toolkit }) {
   if (usage === "client") {
     return "agency";
@@ -71,9 +97,18 @@ function renderRecommendation(tier) {
     item.textContent = feature;
     return item;
   }));
-  checkout.href = data.checkout;
+  checkout.href = withStripeAttribution(data.checkout, window.location.search);
   checkout.dataset.checkout = tier;
   checkout.firstChild.textContent = `Buy ${data.name} `;
+}
+
+function initialiseCheckoutAttribution() {
+  for (const checkout of document.querySelectorAll("a[data-checkout]")) {
+    const tier = checkout.dataset.checkout;
+    if (tierData[tier]) {
+      checkout.href = withStripeAttribution(tierData[tier].checkout, window.location.search);
+    }
+  }
 }
 
 function initialiseFitGuide() {
@@ -89,5 +124,6 @@ function initialiseFitGuide() {
 }
 
 if (typeof document !== "undefined") {
+  initialiseCheckoutAttribution();
   initialiseFitGuide();
 }

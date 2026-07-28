@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { recommendTier } from "./site/app.mjs";
+import { recommendTier, withStripeAttribution } from "./site/app.mjs";
 
 const html = await readFile(new URL("./site/index.html", import.meta.url), "utf8");
 const css = await readFile(new URL("./site/styles.css", import.meta.url), "utf8");
@@ -52,6 +52,27 @@ for (const [tier, route] of Object.entries(checkoutRoutes)) {
   assert.match(html, new RegExp(`data-checkout="${tier}"`));
   assert.ok(js.includes(route), `${tier} recommendation route must match the verified checkout.`);
 }
+
+assert.equal(
+  withStripeAttribution(
+    checkoutRoutes.core,
+    "?utm_source=aikendra&utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_02"
+  ),
+  `${checkoutRoutes.core}?utm_source=aikendra&utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_02`
+);
+assert.equal(
+  withStripeAttribution(
+    checkoutRoutes.pro,
+    "?utm_source=buyer%40example.com&utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_03&utm_term=product-creative"
+  ),
+  `${checkoutRoutes.pro}?utm_medium=directory&utm_campaign=pce_validation&utm_content=tool_listing_03&utm_term=product-creative`,
+  "Unsafe campaign values must be dropped instead of forwarded to Stripe."
+);
+assert.equal(
+  withStripeAttribution(checkoutRoutes.agency, "?utm_source=" + "a".repeat(151)),
+  checkoutRoutes.agency,
+  "Stripe campaign values over 150 characters must be dropped."
+);
 
 assert.equal(recommendTier({ usage: "internal", variants: "no", toolkit: "no" }), "core");
 assert.equal(recommendTier({ usage: "internal", variants: "yes", toolkit: "no" }), "pro");
